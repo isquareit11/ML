@@ -1,0 +1,117 @@
+import pandas as pd
+
+df=pd.read_csv('SMSSpamCollection',sep='\t',names=['labels','Text'])
+
+df.head()
+
+df.info()
+
+df.shape
+
+!pip install nltk
+
+import nltk
+nltk.download('stopwords') 
+
+sent='Hello friends! How are you?'
+
+nltk.download('punkt_tab')
+
+
+from nltk.tokenize import word_tokenize  
+word_tokenize(sent)
+
+import nltk
+nltk.download('stopwords')
+
+from nltk.corpus import stopwords
+
+swords=stopwords.words('english')
+
+swords
+
+clean=[word for word in word_tokenize(sent)if word not in swords]
+
+clean
+
+from nltk.stem import PorterStemmer
+ps=PorterStemmer()
+clean=(ps.stem(word) for word in word_tokenize(sent)if word not in swords)
+
+print(list(clean))
+
+sent='Hello friends! How are you? We will be learning python today'
+
+def clean_text(sent):
+    tokens = word_tokenize(sent) 
+    clean = [word.lower() for word in tokens if word.isalpha()] 
+    clean = [ps.stem(word) for word in clean if word not in swords]  
+    return clean
+
+
+cleaned = clean_text(sent)
+print(cleaned)
+
+
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+tfidf=TfidfVectorizer(analyzer=clean_text)
+x=df['Text']
+y=df['labels']
+x_new=tfidf.fit_transform(x)
+
+x.shape
+
+x_new.shape
+
+from sklearn.model_selection import train_test_split
+x_train,x_test,y_train,y_test=train_test_split(x_new,y,random_state=0,test_size=0.25)
+
+x_train.shape
+
+x.test.shape
+
+from sklearn.naive_bayes import GaussianNB
+nb=GaussianNB()
+nb.fit(x_train.toarray(),y_train)
+
+y_pred=nb.predict(x_test.toarray())
+y_test.shape
+
+y_test.value_counts()
+
+from sklearn.metrics import ConfusionMatrixDisplay
+ConfusionMatrixDisplay.from_predictions(y_test,y_pred)
+
+from sklearn.metrics import accuracy_score,classification_report
+print(classification_report(y_test,y_pred))
+
+accuracy_score(y_test,y_pred)
+
+from sklearn.ensemble import RandomForestClassifier
+rf=RandomForestClassifier(random_state=0)
+rf.fit(x_train,y_train)
+
+RandomForestClassifier(random_state=0)
+y_predict=rf.predict(x_test)
+ConfusionMatrixDisplay.from_predictions(y_test,y_pred)
+
+from sklearn.metrics import accuracy_score,classification_report
+print(classification_report(y_test,y_pred))
+
+accuracy_score(y_test,y_pred)
+
+
+from sklearn.linear_model import LogisticRegression
+log=LogisticRegression()
+log.fit(x_train,y_train)
+y_pred=log.predict(x_test)
+accuracy_score(y_test,y_pred)
+
+
+
+
+
+
+
+
